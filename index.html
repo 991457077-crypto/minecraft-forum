@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⛏️ 我的世界论坛 - Minecraft Forum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-input: #0f3460;
+            --green: #4ecca3;
+            --gold: #f0a500;
+            --red: #e84545;
+            --text: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border: #2a2a4a;
+            --dirt: #8b5e3c;
+            --stone: #7f8c8d;
+            --grass: #5d8c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(78, 204, 163, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(240, 165, 0, 0.05) 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ========== Header ========== */
+        .header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            position: relative;
+        }
+
+        .header .logo {
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            font-size: 2.2rem;
+            color: var(--green);
+            text-shadow: 3px 3px 0 #0a3d2e, 0 0 30px rgba(78, 204, 163, 0.3);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            image-rendering: pixelated;
+        }
+
+        .header .subtitle {
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .header .pickaxe {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+            animation: swing 2s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+            0%,
+            100% {
+                transform: rotate(-5deg);
+            }
+            50% {
+                transform: rotate(5deg);
+            }
+        }
+
+        /* ========== Navigation Tabs ========== */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 30px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 6px;
+            border: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-input);
+            color: var(--green);
+            box-shadow: 0 2px 10px rgba(78, 204, 163, 0.2);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-icon {
+            font-size: 1.3rem;
+        }
+
+        /* ========== Tab Content ========== */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== Cards ========== */
+        .card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #3a3a5a;
+        }
+
+        .card-title {
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            font-size: 0.75rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px dashed var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ========== Form Styles ========== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(78, 204, 163, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: #5a5a7a;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: #1a1a2e;
+        }
+
+        .btn-primary:hover {
+            background: #3db88a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 204, 163, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #d33;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ========== Message List ========== */
+        .message-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .message-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .message-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .message-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .message-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .message-item:hover {
+            border-color: #4a4a6a;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .message-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .message-author .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--dirt), var(--grass));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: 2px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .message-time {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            font-size: 0.55rem;
+        }
+
+        .message-body {
+            color: var(--text);
+            line-height: 1.7;
+            word-break: break-word;
+        }
+
+        .message-delete {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            opacity: 0;
+        }
+
+        .message-item:hover .message-delete {
+            opacity: 1;
+        }
+
+        .message-delete:hover {
+            color: var(--red);
+            background: rgba(232, 69, 69, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .message-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .message-count span {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* ========== Server Status ========== */
+        .server-search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .server-search .form-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .status-card {
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.online {
+            border-color: var(--green);
+            box-shadow: 0 0 20px rgba(78, 204, 163, 0.15);
+        }
+
+        .status-card.offline {
+            border-color: var(--red);
+            box-shadow: 0 0 20px rgba(232, 69, 69, 0.15);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            font-size: 0.7rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .status-indicator.online {
+            background: rgba(78, 204, 163, 0.15);
+            color: var(--green);
+        }
+
+        .status-indicator.offline {
+            background: rgba(232, 69, 69, 0.15);
+            color: var(--red);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .status-dot.online {
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+        }
+
+        .status-dot.offline {
+            background: var(--red);
+            box-shadow: 0 0 8px var(--red);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 4px var(--green);
+            }
+            50% {
+                box-shadow: 0 0 16px var(--green), 0 0 24px rgba(78, 204, 163, 0.4);
+            }
+        }
+
+        .server-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .info-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .info-item .info-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .info-item .info-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            word-break: break-all;
+        }
+
+        .info-item .info-value.green {
+            color: var(--green);
+        }
+        .info-item .info-value.gold {
+            color: var(--gold);
+        }
+
+        .motd-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            font-size: 0.65rem;
+            color: var(--gold);
+            text-align: center;
+            line-height: 1.8;
+            min-height: 40px;
+            word-break: break-word;
+        }
+
+        .refresh-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .auto-refresh-badge {
+            background: rgba(78, 204, 163, 0.1);
+            color: var(--green);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .server-history {
+            margin-top: 20px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .history-tag {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .history-tag:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+
+        /* ========== Toast ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .toast.success {
+            background: var(--green);
+            color: #1a1a2e;
+        }
+        .toast.error {
+            background: var(--red);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .header .logo {
+                font-size: 1.2rem;
+            }
+            .header .subtitle {
+                font-size: 0.5rem;
+            }
+            .tabs {
+                flex-direction: column;
+            }
+            .server-info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .message-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .btn-row {
+                flex-direction: column;
+            }
+            .btn-row .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .server-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <span class="pickaxe">⛏️</span>
+            <h1 class="logo">Minecraft 论坛</h1>
+            <p class="subtitle">⚡ 玩家社区 · 服务器监测 ⚡</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="messages">
+                <span class="tab-icon">💬</span> 玩家留言板
+            </button>
+            <button class="tab-btn" data-tab="server">
+                <span class="tab-icon">🖥️</span> 服务器状态
+            </button>
+        </nav>
+
+        <!-- ==================== 留言板 Tab ==================== -->
+        <div class="tab-content active" id="tab-messages">
+            <!-- 发留言表单 -->
+            <div class="card">
+                <h2 class="card-title">📝 发表留言</h2>
+                <form id="messageForm">
+                    <div class="form-group">
+                        <label class="form-label" for="playerName">🎮 玩家名称</label>
+                        <input type="text" id="playerName" class="form-input"
+                        placeholder="请输入你的 Minecraft ID..." maxlength="16" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="messageContent">💬 留言内容</label>
+                        <textarea id="messageContent" class="form-textarea"
+                        placeholder="在这里写下你想说的话..." maxlength="500" required></textarea>
+                    </div>
+                    <div class="btn-row">
+                        <button type="submit" class="btn btn-primary">✨ 发布留言</button>
+                        <button type="button" id="clearAllBtn" class="btn btn-danger btn-sm">🗑️ 清空全部留言</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 留言列表 -->
+            <div class="card">
+                <h2 class="card-title">💬 玩家留言</h2>
+                <div class="message-count" id="messageCount">共 <span>0</span> 条留言</div>
+                <div class="message-list" id="messageList">
+                    <div class="empty-state">
+                        <span class="empty-icon">📭</span>
+                        <p>还没有留言，快来发表第一条吧！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 服务器状态 Tab ==================== -->
+        <div class="tab-content" id="tab-server">
+            <!-- 服务器搜索 -->
+            <div class="card">
+                <h2 class="card-title">🔍 查询服务器</h2>
+                <div class="server-search">
+                    <input type="text" id="serverIp" class="form-input"
+                    placeholder="输入服务器 IP 地址，例如: hypixel.net" value="hypixel.net">
+                    <button id="checkServerBtn" class="btn btn-primary">🔍 查询状态</button>
+                </div>
+                <div class="server-history" id="serverHistory">
+                    <small style="color:var(--text-muted)">📋 最近查询：</small>
+                    <div class="history-list" id="historyList"></div>
+                </div>
+            </div>
+
+            <!-- 服务器状态展示 -->
+            <div class="card" id="statusCard" style="display:none;">
+                <div id="serverStatusContent"></div>
+                <div class="refresh-info">
+                    <span id="lastRefresh"></span>
+                    <span class="auto-refresh-badge" id="autoRefreshBadge">🔄 每30秒自动刷新</span>
+                </div>
+            </div>
+
+            <!-- 默认提示 -->
+            <div class="card" id="statusPlaceholder">
+                <div class="empty-state">
+                    <span class="empty-icon">🖥️</span>
+                    <p>在上方输入服务器 IP 地址，点击查询即可查看服务器状态</p>
+                    <p style="font-size:0.8rem;margin-top:8px;">支持 Java 版和基岩版服务器</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>⛏️ Minecraft Forum · 由社区驱动 · 非官方粉丝站点</p>
+            <p style="margin-top:4px;">Minecraft 是 Mojang AB 的注册商标</p>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            // ==================== 常量 ====================
+            // ⚠️ 请替换为你的 Supabase 项目信息（在 supabase.com 项目设置中获取）
+            const SUPABASE_URL = 'https://mpqsoyyxqzsvsiooncgp.supabase.co';
+            const SUPABASE_KEY = 'sb_publishable_9Z_xc4nYWmPlSI95qFcHKw_MY0Ka74T';
+            const STORAGE_KEY_HISTORY = 'mc_forum_history';
+            const AUTO_REFRESH_INTERVAL = 30000;
+            const MSG_REFRESH_INTERVAL = 10000;
+            const API_BASE = 'https://api.mcsrvstat.us/2/';
+
+            // ==================== DOM 元素 ====================
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            const tabBtns = $$('.tab-btn');
+            const tabContents = $$('.tab-content');
+            const messageForm = $('#messageForm');
+            const playerNameInput = $('#playerName');
+            const messageContentInput = $('#messageContent');
+            const messageList = $('#messageList');
+            const messageCount = $('#messageCount');
+            const clearAllBtn = $('#clearAllBtn');
+            const serverIpInput = $('#serverIp');
+            const checkServerBtn = $('#checkServerBtn');
+            const statusCard = $('#statusCard');
+            const statusPlaceholder = $('#statusPlaceholder');
+            const serverStatusContent = $('#serverStatusContent');
+            const lastRefresh = $('#lastRefresh');
+            const autoRefreshBadge = $('#autoRefreshBadge');
+            const historyList = $('#historyList');
+
+            // ==================== 状态 ====================
+            let autoRefreshTimer = null;
+            let currentServerIp = '';
+
+            // ==================== Tab 切换 ====================
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    if (tab === 'messages') {
+                        $('#tab-messages').classList.add('active');
+                    } else {
+                        $('#tab-server').classList.add('active');
+                    }
+                });
+            });
+
+            // ==================== Toast 提示 ====================
+            function showToast(msg, type = 'success') {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = msg;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            // ==================== 留言板功能（Supabase） ====================
+            async function fetchMessages() {
+                try {
+                    const res = await fetch(
+                        `${SUPABASE_URL}/rest/v1/messages?select=*&order=created_at.desc&limit=100`,
+                        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+                    );
+                    if (!res.ok) throw new Error('获取留言失败');
+                    return await res.json();
+                } catch (err) {
+                    console.error('获取留言出错:', err);
+                    return [];
+                }
+            }
+
+            async function insertMessage(name, content) {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
+                    method: 'POST',
+                    headers: {
+                        apikey: SUPABASE_KEY,
+                        Authorization: `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        Prefer: 'return=minimal'
+                    },
+                    body: JSON.stringify({ player_name: name, content })
+                });
+                if (!res.ok) throw new Error('留言发布失败');
+            }
+
+            async function deleteMessageById(id) {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/messages?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+                });
+                if (!res.ok) throw new Error('删除失败');
+            }
+
+            async function deleteAllMessages() {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/messages?id=gt.0`, {
+                    method: 'DELETE',
+                    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+                });
+                if (!res.ok) throw new Error('清空失败');
+            }
+
+            function formatTime(dateStr) {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                const pad = (n) => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+            }
+
+            function getAvatarEmoji(name) {
+                const emojis = ['🟩', '🟫', '🟨', '🟦', '🟪', '🟧', '⬜', '🟥'];
+                let hash = 0;
+                for (let i = 0; i < name.length; i++) {
+                    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return emojis[Math.abs(hash) % emojis.length];
+            }
+
+            function renderMessages(messages) {
+                messageCount.innerHTML = '共 <span>' + messages.length + '</span> 条留言';
+
+                if (messages.length === 0) {
+                    messageList.innerHTML = `<div class="empty-state"><span class="empty-icon">📭</span><p>还没有留言，快来发表第一条吧！</p></div>`;
+                    return;
+                }
+
+                messageList.innerHTML = messages
+                    .map((msg) => `<div class="message-item"><button class="message-delete" data-id="${msg.id}" title="删除留言">✕</button><div class="message-header"><div class="message-author"><div class="avatar">${getAvatarEmoji(msg.player_name)}</div><span>${escapeHtml(msg.player_name)}</span></div><span class="message-time">${formatTime(msg.created_at)}</span></div><div class="message-body">${escapeHtml(msg.content)}</div></div>`)
+                    .join('');
+
+                messageList.querySelectorAll('.message-delete').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        if (confirm('确定要删除这条留言吗？')) {
+                            try {
+                                await deleteMessageById(id);
+                                await loadMessages();
+                                showToast('留言已删除', 'success');
+                            } catch { showToast('删除失败，请重试', 'error'); }
+                        }
+                    });
+                });
+            }
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            async function loadMessages() {
+                const messages = await fetchMessages();
+                renderMessages(messages);
+            }
+
+            messageForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = playerNameInput.value.trim();
+                const content = messageContentInput.value.trim();
+                if (!name || !content) { showToast('请填写玩家名称和留言内容', 'error'); return; }
+                if (name.length > 16) { showToast('玩家名称不能超过16个字符', 'error'); return; }
+                if (content.length > 500) { showToast('留言内容不能超过500个字符', 'error'); return; }
+                try {
+                    await insertMessage(name, content);
+                    await loadMessages();
+                    messageContentInput.value = '';
+                    showToast('✅ 留言发布成功！');
+                } catch (err) {
+                    showToast('发布失败，请检查 Supabase 配置是否正确', 'error');
+                    console.error(err);
+                }
+            });
+
+            clearAllBtn.addEventListener('click', async () => {
+                const messages = await fetchMessages();
+                if (messages.length === 0) { showToast('没有留言可以清空', 'error'); return; }
+                if (confirm('确定要清空所有留言吗？此操作不可恢复！')) {
+                    try {
+                        await deleteAllMessages();
+                        await loadMessages();
+                        showToast('所有留言已清空');
+                    } catch { showToast('清空失败，请重试', 'error'); }
+                }
+            });
+
+            // ==================== 服务器状态功能 ====================
+            function getHistory() {
+                try {
+                    return JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function addHistory(ip) {
+                let history = getHistory();
+                history = history.filter(h => h !== ip);
+                history.unshift(ip);
+                if (history.length > 8) history.pop();
+                localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+                renderHistory();
+            }
+
+            function renderHistory() {
+                const history = getHistory();
+                if (history.length === 0) {
+                    historyList.innerHTML =
+                        '<span style="color:var(--text-muted);font-size:0.8rem;">暂无查询记录</span>';
+                    return;
+                }
+                historyList.innerHTML = history.map(ip => `
+                    <span class="history-tag" data-ip="${escapeHtml(ip)}">${escapeHtml(ip)}</span>
+                `).join('');
+
+                historyList.querySelectorAll('.history-tag').forEach(tag => {
+                    tag.addEventListener('click', () => {
+                        serverIpInput.value = tag.dataset.ip;
+                        checkServerStatus(tag.dataset.ip);
+                    });
+                });
+            }
+
+            async function checkServerStatus(ip) {
+                if (!ip || !ip.trim()) {
+                    showToast('请输入服务器 IP 地址', 'error');
+                    return;
+                }
+
+                ip = ip.trim();
+                currentServerIp = ip;
+                serverIpInput.value = ip;
+
+                // 显示加载状态
+                statusCard.style.display = 'block';
+                statusPlaceholder.style.display = 'none';
+                serverStatusContent.innerHTML = `
+                    <div class="empty-state">
+                        <span class="empty-icon">⏳</span>
+                        <p>正在查询服务器 <strong>${escapeHtml(ip)}</strong> ...</p>
+                    </div>`;
+
+                try {
+                    const response = await fetch(API_BASE + encodeURIComponent(ip));
+                    if (!response.ok) throw new Error('API 请求失败');
+                    const data = await response.json();
+
+                    renderServerStatus(data, ip);
+                    addHistory(ip);
+                    updateLastRefresh();
+                    startAutoRefresh(ip);
+                } catch (err) {
+                    serverStatusContent.innerHTML = `
+                        <div class="empty-state">
+                            <span class="empty-icon">❌</span>
+                            <p>查询失败，请检查服务器地址是否正确</p>
+                            <p style="font-size:0.8rem;margin-top:8px;color:var(--text-muted);">${escapeHtml(err.message)}</p>
+                        </div>`;
+                    autoRefreshBadge.textContent = '⚠️ 自动刷新已暂停';
+                    autoRefreshBadge.style.color = 'var(--red)';
+                    stopAutoRefresh();
+                }
+            }
+
+            function renderServerStatus(data, ip) {
+                const isOnline = data.online;
+                const statusClass = isOnline ? 'online' : 'offline';
+                const statusText = isOnline ? '🟢 在线' : '🔴 离线';
+
+                let motd = '';
+                if (data.motd) {
+                    if (Array.isArray(data.motd)) {
+                        motd = data.motd.map(m => m.replace(/§[0-9a-fk-or]/gi, '')).join('\n');
+                    } else {
+                        motd = String(data.motd).replace(/§[0-9a-fk-or]/gi, '');
+                    }
+                }
+
+                let html = `
+                <div class="status-card ${statusClass}">
+                    <div class="status-indicator ${statusClass}">
+                        <span class="status-dot ${statusClass}"></span>
+                        ${statusText}
+                    </div>
+                    <div style="font-size:1.2rem;font-weight:700;margin-bottom:4px;word-break:break-all;">${escapeHtml(ip)}</div>`;
+
+                if (isOnline) {
+                    html += `
+                    <div class="server-info-grid">
+                        <div class="info-item">
+                            <div class="info-label">👥 在线玩家</div>
+                            <div class="info-value green">${data.players?.online ?? '?'} / ${data.players?.max ?? '?'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">📦 版本</div>
+                            <div class="info-value">${escapeHtml(data.version ?? '未知')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🌐 协议</div>
+                            <div class="info-value">${data.protocol ?? '?'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">💻 软件</div>
+                            <div class="info-value">${escapeHtml(data.software ?? '未知')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🎮 游戏模式</div>
+                            <div class="info-value">${data.gamemode ?? '未知'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🔌 端口</div>
+                            <div class="info-value gold">${data.port ?? 25565}</div>
+                        </div>
+                    </div>`;
+
+                    if (motd) {
+                        html += `<div class="motd-box">${escapeHtml(motd)}</div>`;
+                    }
+
+                    if (data.players?.list && data.players.list.length > 0) {
+                        html += `
+                        <div style="margin-top:14px;">
+                            <small style="color:var(--text-muted);">🎮 在线玩家列表：</small>
+                            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+                                ${data.players.list.map(p => 
+                                    `<span style="background:rgba(78,204,163,0.1);color:var(--green);padding:3px 10px;border-radius:12px;font-size:0.8rem;">${escapeHtml(p)}</span>`
+                                ).join('')}
+                            </div>
+                        </div>`;
+                    }
+                } else {
+                    html += `
+                    <div class="empty-state" style="padding:20px;">
+                        <span class="empty-icon">🔴</span>
+                        <p>服务器当前离线或无法连接</p>
+                    </div>`;
+                }
+
+                html += '</div>';
+                serverStatusContent.innerHTML = html;
+            }
+
+            function updateLastRefresh() {
+                const now = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                lastRefresh.textContent =
+                    `⏱️ 最后刷新：${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+            }
+
+            function startAutoRefresh(ip)const SUPABASE_URL = 'https://abcdefg.supabase.co';   // 你的 Project URL
+const SUPABASE_KEY = 'eyJhbGciOi...';                   // 你的 anon key
+const SUPABASE_URL = 'https://abcdefg.supabase.co';   // 你的 Project URL
+const SUPABASE_KEY = 'eyJhbGciOi...';                   // 你的 anon key
+ {
+                stopAutoRefresh();
+                autoRefreshBadge.textContent = '🔄 每30秒自动刷新';
+                autoRefreshBadge.style.color = 'var(--green)';
+                autoRefreshTimer = setInterval(() => {
+                    checkServerStatus(ip);
+                }, AUTO_REFRESH_INTERVAL);
+            }
+
+            function stopAutoRefresh() {
+                if (autoRefreshTimer) {
+                    clearInterval(autoRefreshTimer);
+                    autoRefreshTimer = null;
+                }
+            }
+
+            checkServerBtn.addEventListener('click', () => {
+                checkServerStatus(serverIpInput.value);
+            });
+
+            serverIpInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    checkServerStatus(serverIpInput.value);
+                }
+            });
+
+            // ==================== 初始化 ====================
+            let msgPollTimer = null;
+
+            async function init() {
+                await loadMessages();
+                renderHistory();
+                checkServerStatus('hypixel.net');
+                msgPollTimer = setInterval(loadMessages, MSG_REFRESH_INTERVAL);
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
