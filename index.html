@@ -68,12 +68,126 @@
             letter-spacing: 1px;
         }
 
+        .promo-card {
+            background: linear-gradient(135deg, rgba(240, 165, 0, 0.15), rgba(78, 204, 163, 0.15));
+            border: 2px solid var(--gold);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(240, 165, 0, 0.2);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(240, 165, 0, 0.15); }
+            50% { box-shadow: 0 0 40px rgba(240, 165, 0, 0.35); }
+        }
+
+        .promo-title {
+            font-family: 'Press Start 2P', 'Microsoft YaHei', cursive;
+            font-size: 0.7rem;
+            color: var(--gold);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .promo-ip {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .promo-ip:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .server-ip-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            background: var(--green);
+            color: #1a1a2e;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #3db88a;
+            transform: scale(1.05);
+        }
+
         .header .pickaxe {
             font-size: 3rem;
             display: block;
             margin-bottom: 10px;
             animation: swing 2s ease-in-out infinite;
         }
+
+        .admin-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .admin-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .admin-btn.active { background: rgba(240,165,0,0.15); border-color: var(--gold); color: var(--gold); }
+
+        .admin-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: #1a1a2e;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-modal.show { display: flex; }
+        .admin-modal .modal-box {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 30px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+        }
+        .admin-modal .modal-box h3 { color: var(--gold); margin-bottom: 16px; font-family: 'Press Start 2P','Microsoft YaHei',cursive; font-size: 0.7rem; }
+        .admin-modal .modal-box .form-input { margin-bottom: 14px; }
 
         @keyframes swing {
             0%,
@@ -672,10 +786,20 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
+            <button class="admin-btn" id="adminBtn" title="管理员登录">🔒 管理员</button>
             <span class="pickaxe">⛏️</span>
             <h1 class="logo">Minecraft 论坛</h1>
             <p class="subtitle">⚡ 玩家社区 · 服务器监测 ⚡</p>
         </header>
+
+        <!-- 服务器推广 -->
+        <div class="promo-card">
+            <div class="promo-title">🎮 欢迎加入我们的服务器！</div>
+            <div class="promo-ip" id="serverPromoIp" title="点击复制">
+                <span class="server-ip-text">play.simpfun.cn:16775</span>
+                <button class="copy-btn">📋 复制</button>
+            </div>
+        </div>
 
         <!-- Navigation Tabs -->
         <nav class="tabs">
@@ -761,8 +885,21 @@
         <!-- Footer -->
         <footer class="footer">
             <p>⛏️ Minecraft Forum · 由社区驱动 · 非官方粉丝站点</p>
-            <p style="margin-top:4px;">Minecraft 是 Mojang AB 的注册商标</p>
+            <p style="margin-top:4px;">Created by <strong style="color:var(--gold);">网页创作者：yzzy520</strong> · Minecraft 是 Mojang AB 的注册商标</p>
         </footer>
+
+        <!-- 管理员登录弹窗 -->
+        <div class="admin-modal" id="adminModal">
+            <div class="modal-box">
+                <h3>🔐 管理员登录</h3>
+                <input type="password" id="adminPassword" class="form-input" placeholder="请输入管理员密码" maxlength="32">
+                <div class="btn-row" style="justify-content:center;">
+                    <button id="adminLoginBtn" class="btn btn-primary">登 录</button>
+                    <button id="adminCancelBtn" class="btn btn-secondary">取 消</button>
+                </div>
+                <p id="adminError" style="color:var(--red);font-size:0.8rem;margin-top:10px;display:none;">密码错误</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -796,7 +933,28 @@
             const lastRefresh = $('#lastRefresh');
             const autoRefreshBadge = $('#autoRefreshBadge');
             const historyList = $('#historyList');
+            const adminBtn = $('#adminBtn');
+            const adminModal = $('#adminModal');
+            const adminPassword = $('#adminPassword');
+            const adminLoginBtn = $('#adminLoginBtn');
+            const adminCancelBtn = $('#adminCancelBtn');
+            const adminError = $('#adminError');
 
+            // ==================== 管理员 ====================
+            const ADMIN_PASSWORD = 'mc2024';
+            let isAdmin = sessionStorage.getItem('mc_admin') === 'true';
+
+            function updateAdminUI() {
+                if (isAdmin) {
+                    adminBtn.textContent = '🔓 管理员';
+                    adminBtn.classList.add('active');
+                    clearAllBtn.style.display = '';
+                } else {
+                    adminBtn.textContent = '🔒 管理员';
+                    adminBtn.classList.remove('active');
+                    clearAllBtn.style.display = 'none';
+                }
+            }
             // ==================== 状态 ====================
             let autoRefreshTimer = null;
             let currentServerIp = '';
@@ -896,23 +1054,29 @@
                     return;
                 }
 
+                const delBtn = (msg) => isAdmin
+                    ? `<button class="message-delete" data-id="${msg.id}" title="删除留言">✕</button>`
+                    : '';
+
                 messageList.innerHTML = messages
-                    .map((msg) => `<div class="message-item"><button class="message-delete" data-id="${msg.id}" title="删除留言">✕</button><div class="message-header"><div class="message-author"><div class="avatar">${getAvatarEmoji(msg.player_name)}</div><span>${escapeHtml(msg.player_name)}</span></div><span class="message-time">${formatTime(msg.created_at)}</span></div><div class="message-body">${escapeHtml(msg.content)}</div></div>`)
+                    .map((msg) => `<div class="message-item">${delBtn(msg)}<div class="message-header"><div class="message-author"><div class="avatar">${getAvatarEmoji(msg.player_name)}</div><span>${escapeHtml(msg.player_name)}</span></div><span class="message-time">${formatTime(msg.created_at)}</span></div><div class="message-body">${escapeHtml(msg.content)}</div></div>`)
                     .join('');
 
-                messageList.querySelectorAll('.message-delete').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.stopPropagation();
-                        const id = parseInt(btn.dataset.id);
-                        if (confirm('确定要删除这条留言吗？')) {
-                            try {
-                                await deleteMessageById(id);
-                                await loadMessages();
-                                showToast('留言已删除', 'success');
-                            } catch { showToast('删除失败，请重试', 'error'); }
-                        }
+                if (isAdmin) {
+                    messageList.querySelectorAll('.message-delete').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = parseInt(btn.dataset.id);
+                            if (confirm('确定要删除这条留言吗？')) {
+                                try {
+                                    await deleteMessageById(id);
+                                    await loadMessages();
+                                    showToast('留言已删除', 'success');
+                                } catch { showToast('删除失败，请重试', 'error'); }
+                            }
+                        });
                     });
-                });
+                }
             }
 
             function escapeHtml(str) {
@@ -945,6 +1109,7 @@
             });
 
             clearAllBtn.addEventListener('click', async () => {
+                if (!isAdmin) { showToast('只有管理员才能清空留言', 'error'); return; }
                 const messages = await fetchMessages();
                 if (messages.length === 0) { showToast('没有留言可以清空', 'error'); return; }
                 if (confirm('确定要清空所有留言吗？此操作不可恢复！')) {
@@ -954,6 +1119,41 @@
                         showToast('所有留言已清空');
                     } catch { showToast('清空失败，请重试', 'error'); }
                 }
+            });
+
+            adminBtn.addEventListener('click', () => {
+                if (isAdmin) {
+                    isAdmin = false;
+                    sessionStorage.removeItem('mc_admin');
+                    updateAdminUI();
+                    loadMessages();
+                    showToast('已退出管理员模式');
+                } else {
+                    adminModal.classList.add('show');
+                    adminPassword.value = '';
+                    adminError.style.display = 'none';
+                }
+            });
+
+            adminLoginBtn.addEventListener('click', () => {
+                if (adminPassword.value === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    sessionStorage.setItem('mc_admin', 'true');
+                    updateAdminUI();
+                    adminModal.classList.remove('show');
+                    loadMessages();
+                    showToast('✅ 管理员登录成功');
+                } else {
+                    adminError.style.display = 'block';
+                }
+            });
+
+            adminCancelBtn.addEventListener('click', () => adminModal.classList.remove('show'));
+            adminPassword.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') adminLoginBtn.click();
+            });
+            adminModal.addEventListener('click', (e) => {
+                if (e.target === adminModal) adminModal.classList.remove('show');
             });
 
             // ==================== 服务器状态功能 ====================
@@ -1149,11 +1349,23 @@
             let msgPollTimer = null;
 
             async function init() {
+                updateAdminUI();
                 await loadMessages();
                 renderHistory();
                 checkServerStatus('hypixel.net');
                 msgPollTimer = setInterval(loadMessages, MSG_REFRESH_INTERVAL);
             }
+
+            // 服务器推广复制
+            document.getElementById('serverPromoIp').addEventListener('click', async () => {
+                const ip = 'play.simpfun.cn:16775';
+                try {
+                    await navigator.clipboard.writeText(ip);
+                    showToast('✅ 服务器地址已复制到剪贴板！', 'success');
+                } catch {
+                    showToast('复制失败，请手动复制：' + ip, 'error');
+                }
+            });
 
             init();
         })();
